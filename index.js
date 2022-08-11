@@ -1,5 +1,6 @@
 const express = require('express')
 const mysql = require('mysql')
+const path = require('path');
 
 // --------------------------------------------------- //
 // SQL FUNCTIONS //
@@ -47,6 +48,7 @@ const port = process.env.PORT || 3000
 app.use(express.json())
 app.use(express.static('public'))
 app.use(express.urlencoded({extended: true}))
+app.use('/', express.static(path.join(__dirname + '/public')));
 
 app.post('/api/post', (req, res) => {
   const b = req.body
