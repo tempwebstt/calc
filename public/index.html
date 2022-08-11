@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Main page</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src='https://kit.fontawesome.com/a076d05399.js' crossorigin='anonymous'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script type="text/javascript">
+      function showform(show, text="") {
+        var element = document.getElementById("add_data");
+        if (!show) element.classList.add("hidden");
+        else {
+          element.classList.remove("hidden");
+          var preAM = document.getElementById("preAM")
+          var am = document.getElementById("amount")
+          var color = (text == '-' ? 'red' : 'green')
+          preAM.innerHTML = text;
+          preAM.style.color = color;
+          am.style.color = color;
+        }
+      }
+
+      function remove(id, title) {
+        if(confirm(`Are you sure you want to delete the operation "${title}" ?`)) {
+          window.location.href = '/api/remove/' + id;
+        }
+      }
+
+      function move(isBack) {
+        var element = document.getElementById("month")
+        var option = element.value;
+        if (isBack) element.value = (parseInt(option)-1 >= 0 ? parseInt(option)-1 : 12);
+        else element.value = (parseInt(option)+1 <= 12 ? parseInt(option)+1 : 0);
+        showData()
+      }
+
+      async function showData() {
+        const el = document.getElementById('month');
+        const ar = await fetch('/api/load').then(response => response.json());
+        const ul = document.getElementById('list')
+        var total_plus = parseFloat(0), total_minus = parseFloat(0), counter = 0;
+        ul.innerHTML = '';
+        ar.forEach(e => {
+          var date_f = new Date(e.date).toLocaleDateString('en-GB', {
+              day : 'numeric',
+              month : 'numeric',
+              year : 'numeric'
+          }).split('/').join('.');
+          var month = parseInt(date_f.split('.')[1]);
+          if (el.value == month || el.value == 0) {
+            counter += 1;
+            var amount = parseFloat(e.amount);
+            var cl = "float-end fw-bold " + (amount >= 0 ? "text-success" : "text-danger");
+            var sym = (amount >= 0 ? "+" : "");
+            if (amount >= 0) total_plus += amount;
+            else total_minus += amount;
+            ul.innerHTML += `
+            <li class="list-group-item">
+              <span class="fw-bold">
+                <button type="button" class="btn btn-sm btn-link p-0" onclick="remove(${e.id}, '${e.title}')">
+                  <i class="far fa-trash-alt" style='font-size: 1rem'></i>
+                </button>
+                ${e.title}
+              </span>
+              <span class="${cl}">${sym}${amount.toFixed(2)}€</span>
+              <br>
+              <span class="text-muted">${e.comment}</span>
+              <span class="float-end">${date_f}</span>
+            </li>`
+          }
+          document.getElementById('total_plus').innerHTML = parseFloat(total_plus).toFixed(2);
+          document.getElementById('total_minus').innerHTML = parseFloat(-1 * total_minus).toFixed(2);
+          document.getElementById('total').innerHTML = parseFloat(total_plus + total_minus).toFixed(2);
+        })
+
+        if (counter == 0) {
+          var li = document.createElement("li");
+          li.classList.add('list-group-item', 'text-center');
+          li.appendChild(document.createTextNode("No data found for selected month"));
+          ul.appendChild(li);
+        }
+      }
+
+      function submitform() {
+        var am = document.getElementById('amount').value.replace(/,/g, '.');;
+        if(document.getElementById('preAM').innerHTML == '-') document.getElementById('amount').value = am * (-1);
+        document.getElementById('form_a').submit()
+      }
+
+      const m = ['(01) January', '(02) February', '(03) March', '(04) April', '(05) May', '(06) June', '(07) July', '(08) August', '(09) September', '(10) October', '(11) November', '(12) December']
+      window.onload = async () => {
+        var element = document.getElementById("month")
+        for (var i = 0; i < m.length; i++) {
+          var opt = document.createElement('option');
+          opt.value = i+1;
+          opt.innerHTML = m[i];
+          element.appendChild(opt);
+        }
+        var d = new Date();
+        element.value = d.getMonth() + 1;
+
+        showData()
+
+        const ar = await fetch('/api/load').then(response => response.json());
+        var total = parseFloat(0);
+        ar.forEach(e => { total += e.amount; })
+        document.getElementById('overall_total').innerHTML = parseFloat(total).toFixed(2);
+      };
+
+      Array.prototype.max = function() {
+        return Math.max.apply(null, this);
+      };
+
+      Array.prototype.min = function() {
+        return Math.min.apply(null, this);
+      };
+
+      async function loadChart() {
+        var xValues = [1,2,3,4,5,6,7,8,9,10,11,12];
+        var yValues = [0,0,0,0,0,0,0,0,0, 0, 0, 0];
+
+        const ar = await fetch('/api/load').then(response => response.json());
+        ar.forEach(e => {
+          var date_f = new Date(e.date).toLocaleDateString('en-GB', {
+              day : 'numeric',
+              month : 'numeric',
+              year : 'numeric'
+          }).split('/').join('.');
+          var month = parseInt(date_f.split('.')[1]);
+          yValues[month-1] += e.amount;
+        })
+
+        var min = (yValues.min() >= 0 ? -100 : (Math.ceil(yValues.min()/100)*100)-100);
+        var max = (yValues.max() == 0 ? 100 : (Math.ceil(yValues.max()/100)*100)+100);
+
+        new Chart("myChart", {
+          type: "line",
+          data: {
+            labels: xValues,
+            datasets: [{
+              fill: false,
+              lineTension: 0,
+              backgroundColor: "rgba(0,0,255,1.0)",
+              borderColor: "rgba(0,0,255,0.1)",
+              data: yValues
+            }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            legend: {display: false},
+            scales: {
+              yAxes: [{ticks: {min: min, max: max}}],
+            }
+          }
+        });
+      }
+
+      $(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
+    <style media="screen">
+      form > * { color: white; }
+      .hidden { display: none; }
+      .bt {border-top: 1px solid gray; }
+      .preAM {
+        font-weight: bold;
+        text-align: center !important;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <nav class="navbar navbar-dark bg-dark">
+        <div class="container-md w-100">
+          <a class="navbar-brand mr-0" href="/">
+            <i class="fa fa-home px-3"></i>
+          </a>
+          <span class="text-white" data-toggle="tooltip" data-bs-placement="right" title="Annual difference (overall)">
+            <span id="overall_total">0.00</span>€
+          </span>
+          <button type="button" class="navbar-brand mr-0 btn" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="loadChart()">
+            <i class="fa fa-list"></i>
+          </button>
+        </div>
+      </nav>
+    </header>
+
+    <div class="container-md py-2 bg-light">
+      <div class="row">
+        <div class="col m-auto">
+          <span class="text-secondary">available:</span>
+          <h3 class="p-0"><span id="total" data-toggle="tooltip" data-bs-placement="right" title="Monthly difference (overall)">0.00</span>€</h3>
+        </div>
+        <div class="col">
+          <h3 class="text-end">
+            <span class="text-success">
+              +<span id="total_plus" data-toggle="tooltip" data-bs-placement="left" title="Monthly income only">0.00</span>€
+            </span>
+            <br>
+            <span class="text-danger">
+              -<span id="total_minus" data-toggle="tooltip" data-bs-placement="left" title="Monthly purchases only">0.00</span>€
+            </span>
+          </h3>
+        </div>
+      </div>
+      <div class="btn-group btn-group-sm w-100" role="group">
+        <button type="button" class="btn btn-success" onclick="showform(true, '+')">Income (+)</button>
+        <button type="button" class="btn btn-danger" onclick="showform(true, '-')">Purchase (-)</button>
+      </div>
+    </div>
+
+    <div id="add_data" class="container-md py-2 bg-secondary hidden">
+      <button type="button" class="btn-close btn-close-white float-end" aria-label="Close" onclick="showform(false)"></button>
+      <form id="form_a" action="/api/post" method="post">
+        <div class="form-group mt-3">
+          <label for="title">Title</label>
+          <input type="text" name="title" id="title" class="form-control" placeholder="Short description">
+        </div>
+        <div class="form-group mt-2">
+          <label for="amount">Amount</label>
+          <div class="input-group">
+            <span class="input-group-text preAM" id="preAM">=</span>
+            <input type="number" step=0.01 name="amount" id="amount" class="form-control" placeholder="Amount of money">
+            <span class="input-group-text" id="postAM">€</span>
+          </div>
+        </div>
+        <div class="form-group mt-2">
+          <label for="comment">Comment</label>
+          <input type="text" name="comment" id="comment" class="form-control" placeholder="Description of the operation">
+        </div>
+        <div class="form-group mt-2">
+          <label for="comment">Date of operation</label>
+          <input type="date" name="date" id="date" class="form-control" placeholder="Date">
+        </div>
+        <button type="button" onclick="submitform()" class="btn btn-light mt-4 w-100">Submit</button>
+      </form>
+    </div>
+
+    <div class="container-md py-2 bg-light bt">
+      <div class="input-group mb-3">
+        <button class="btn btn-secondary" type="button" onclick="move(true)"><i class="fa fa-chevron-left"></i></button>
+        <select class="form-select" aria-label=".form-select" id="month" onchange="showData()">
+          <option disabled>Select a month</option>
+          <option value=0>View all</option>
+        </select>
+        <button class="btn btn-secondary" type="button" onclick="move(false)"><i class="fa fa-chevron-right"></i></button>
+      </div>
+      <ul class="list-group" id="list"></ul>
+    </div>
+
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-fullscreen-md-down">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Statistics</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <h3>Annual stat. per month </h3>
+            <canvas id="myChart" style="width:100%; max-width:600px; max-height: 50vh;"></canvas>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
