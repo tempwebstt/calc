@@ -83,7 +83,7 @@ app.get('/api/remove/:id', (req, res) => {
 })
 
 app.get('/api/load', (req, res) => {
-  connection.query("SELECT * FROM oper ORDER BY date", function (err, result) {
+  connection.query("SELECT * FROM oper ORDER BY date DESC, addedAt DESC, id DESC", function (err, result) {
     res.send(result);
   });
 })
