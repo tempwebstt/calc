@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./main.css">
     <script type="text/javascript">
       var ar = []
+      var monthly = {}
       const m = ['(01) January', '(02) February', '(03) March', '(04) April', '(05) May', '(06) June', '(07) July', '(08) August', '(09) September', '(10) October', '(11) November', '(12) December']
       window.onload = async () => {
         var element = document.getElementById("month")
@@ -66,8 +67,9 @@
       }
 
       async function showData() {
-        const el = document.getElementById('month');
+        const el = document.getElementById('month')
         const ul = document.getElementById('list')
+        monthly = {}
         var total_plus = parseFloat(0), total_minus = parseFloat(0), counter = 0;
         ul.innerHTML = '';
         ar.forEach(e => {
@@ -75,7 +77,12 @@
             day:'numeric', month:'numeric', year:'numeric'
           }).split('/').join('.');
           var month = parseInt(date_f.split('.')[1]);
+
           if (el.value == month || el.value == 0) {
+
+            if (date_f in Object.keys(monthly)) monthly[date_f] += parseFloat(e.amount)
+            else monthly[date_f] = parseFloat(e.amount)
+
             counter += 1;
             var amount = parseFloat(e.amount);
             var cl = "float-end fw-bold " + (amount >= 0 ? "text-success" : "text-danger");
@@ -106,19 +113,44 @@
       }
 
       function submitform() {
-        var am = document.getElementById('amount').value.replace(/,/g, '.');;
+        var am = document.getElementById('amount').value.replace(/,/g, '.');
         if(document.getElementById('preAM').innerHTML == '-') document.getElementById('amount').value = am * (-1);
         document.getElementById('form_a').submit()
       }
 
+      function loadStats() {
+        var el = document.getElementById('stat-daily');
+        el.innerHTML = ''
+        if (Object.keys(monthly).length > 0) {
+          Object.keys(monthly).forEach(k => {
+            var sym = (monthly[k] > 0 ? '+' : '')
+            var cl = (monthly[k] > 0 ? 'success' : 'danger')
+            var li = document.createElement('li')
+            li.className = 'list-group-item d-flex justify-content-between align-items-center'
+            li.innerHTML = `${k} <span class="badge bg-${cl} rounded-pill">${sym}${monthly[k]}€</span>`
+            el.appendChild(li)
+          });
+        }
+        else {
+          var mi = document.getElementById('month').value;
+          el.innerHTML = `
+          <li class="list-group-item text-center">
+            No data for current month (${m[mi-1].split(') ')[1]})
+          </li>
+          `
+        }
+      }
+
       async function loadChart() {
+        var someTabTriggerEl = document.querySelector('#myTab')
+        var tab = new bootstrap.Tab('#annual-tab')
+        tab.show()
+
         var xValues = [1,2,3,4,5,6,7,8,9,10,11,12];
         var yValues = [0,0,0,0,0,0,0,0,0, 0, 0, 0];
         ar.forEach(e => {
           var date_f = new Date(e.date).toLocaleDateString('en-GB', {
-              day : 'numeric',
-              month : 'numeric',
-              year : 'numeric'
+            day:'numeric', month:'numeric', year:'numeric'
           }).split('/').join('.');
           var month = parseInt(date_f.split('.')[1]);
           yValues[month-1] += e.amount;
@@ -247,8 +279,26 @@
             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
-            <h3>Annual stat. per month </h3>
-            <canvas id="myChart" style="width:100%; max-width:600px; max-height: 50vh;"></canvas>
+            <ul class="nav nav-pills nav-fill" id="myTab" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="annual-tab" data-bs-toggle="tab" data-bs-target="#annual" type="button" role="tab" aria-controls="annual" aria-selected="true">Annual</button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthly" type="button" role="tab" aria-controls="profile" aria-selected="false" onclick="loadStats()">Monthly</button>
+              </li>
+            </ul>
+            <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade show active" id="annual" role="tabpanel" aria-labelledby="annual-tab">
+                <p class="text-center mb-0 pt-3">Annual stat. per each month</p>
+                <canvas id="myChart" style="width:100%; max-width:600px; max-height: 50vh;"></canvas>
+              </div>
+              <div class="tab-pane fade" id="monthly" role="tabpanel" aria-labelledby="monthly-tab">
+                <p class="text-center mb-0 pt-3">Daily stat. per each day</p>
+                <ul id="stat-daily" class="list-group">
+
+                </ul>
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-dark w-100" data-bs-dismiss="modal">Close</button>
