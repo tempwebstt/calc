@@ -58,6 +58,23 @@ app.post('/api/post', (req, res) => {
   res.redirect('/');
 })
 
+app.post('/api/edit', (req, res) => {
+  const b = req.body
+  console.log(b)
+  connection.query(`UPDATE oper SET title="${b.title}", amount=${b.amount}, comment="${b.comment}", date="${b.date}" WHERE ID=${b.id}`, function (err, result) {
+    console.log('edit: done!')
+    console.log(result)
+    if (err) console.log(err)
+  });
+  res.redirect('/');
+})
+
+app.get('/api/info/:id', (req, res) => {
+  connection.query(`SELECT * FROM oper WHERE oper.id = ${req.params.id}`, function (err, result) {
+    res.send(result);
+  });
+})
+
 app.get('/api/remove/:id', (req, res) => {
   connection.query(`DELETE FROM oper WHERE oper.id = ${req.params.id}`, function (err, result) {
     console.log('remove: done!')
