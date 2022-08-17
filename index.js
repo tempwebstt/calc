@@ -52,7 +52,7 @@ app.use('/', express.static(path.join(__dirname + '/public')));
 
 app.post('/api/post', (req, res) => {
   const b = req.body
-  connection.query(`INSERT INTO oper (title, amount, comment, date, addedAt) VALUES ("${b.title}", ${b.amount}, "${b.comment}", "${b.date}", NOW())`, function (err, result) {
+  connection.query(`INSERT INTO oper (title, amount, comment, category, date, addedAt) VALUES ("${b.title}", ${b.amount}, "${b.comment}", ${b.category}, "${b.date}", NOW())`, function (err, result) {
     console.log('add: done!')
   });
   res.redirect('/');
@@ -61,10 +61,8 @@ app.post('/api/post', (req, res) => {
 app.post('/api/edit', (req, res) => {
   const b = req.body
   console.log(b)
-  connection.query(`UPDATE oper SET title="${b.title}", amount=${b.amount}, comment="${b.comment}", date="${b.date}" WHERE ID=${b.id}`, function (err, result) {
+  connection.query(`UPDATE oper SET title="${b.title}", amount=${b.amount}, comment="${b.comment}", category=${b.category}, date="${b.date}" WHERE ID=${b.id}`, function (err, result) {
     console.log('edit: done!')
-    console.log(result)
-    if (err) console.log(err)
   });
   res.redirect('/');
 })
