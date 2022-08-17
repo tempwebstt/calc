@@ -60,7 +60,6 @@ app.post('/api/post', (req, res) => {
 
 app.post('/api/edit', (req, res) => {
   const b = req.body
-  console.log(b)
   connection.query(`UPDATE oper SET title="${b.title}", amount=${b.amount}, comment="${b.comment}", category=${b.category}, date="${b.date}" WHERE ID=${b.id}`, function (err, result) {
     console.log('edit: done!')
   });
