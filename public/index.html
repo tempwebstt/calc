@@ -94,14 +94,13 @@
             counter += 1;
             var amount = parseFloat(e.amount);
             var cl = "float-end fw-bold " + (amount >= 0 ? "text-success" : "text-danger");
-            var iconclr = (c[e.category].includes('text-danger') ? '' : 'text-primary');
             var sym = (amount >= 0 ? "+" : "");
             if (amount >= 0) total_plus += amount;
             else total_minus += amount;
             ul.innerHTML += `
             <a onclick="edit_oper(${e.id})" class="list-group-item list-group-item-action">
               <div class="d-flex w-100 justify-content-between">
-                <span class="fw-bold"><i class="${c[e.category]} fa-fw ${iconclr}"></i>&nbsp; ${e.title}</span>
+                <span class="fw-bold"><i class="${c[e.category]} fa-fw"></i>&nbsp; ${e.title}</span>
                 <span class="${cl}">${sym}${amount.toFixed(2)}€</span>
               </div>
               <p class="mb-1">${e.comment}</p>

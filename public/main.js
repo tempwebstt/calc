@@ -1,5 +1,5 @@
 const m = ['(01) January', '(02) February', '(03) March', '(04) April', '(05) May', '(06) June', '(07) July', '(08) August', '(09) September', '(10) October', '(11) November', '(12) December']
-const c = ['fa fa-close text-danger', 'fas fa-hamburger', 'fa fa-bus', 'fas fa-dice', 'fa fa-medkit', 'fas fa-tshirt', 'fa fa-shopping-cart', 'fas fa-air-freshener', 'fa fa-paperclip', 'fa fa-bank', 'fa fa-tag']
+const c = ['fa fas fa-exclamation-triangle text-danger', 'fas fa-hamburger', 'fa fa-bus', 'fas fa-dice', 'fa fa-medkit', 'fas fa-tshirt', 'fa fa-shopping-cart', 'fas fa-air-freshener', 'fa fa-paperclip', 'fa fa-bank', 'fa fa-tag']
 const cc = ['Invalid option', 'Food', 'Transport', 'Entertainment', 'Medicine', 'Clothes', 'Groceries', 'Beauty/SPA', 'Stationery', 'Transaction', 'Uncategorized']
 
 function changeCA() {

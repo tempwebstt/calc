@@ -37,3 +37,14 @@ input {
   background: none;
   text-align: center;
 }
+
+.fa-hamburger { color: chocolate; }
+.fa-bus { color: crimson; }
+.fa-dice { color: goldenrod; }
+.fa-medkit { color: firebrick; }
+.fa-tshirt { color: forestgreen; }
+.fa-shopping-cart { color: lightslategray; }
+.fa-air-freshener { color: blueviolet; }
+.fa-paperclip { color: dodgerblue; }
+.fa-bank { color: orange; }
+.fa-tag { color: navy; }
