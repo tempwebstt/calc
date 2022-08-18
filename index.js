@@ -68,7 +68,7 @@ app.post('/api/edit', (req, res) => {
 
 app.post('/api/reg', (req, res) => {
   const b = req.body
-  connection.query(`INSERT INTO work (amount, date, rate, addedAt) VALUES (${b.amount}, "${b.date}", ${b.rate}, NOW())`, function (err, result) {
+  connection.query(`INSERT INTO work (amount, date, rate, addedAt) VALUES ("${b.amount}", "${b.date}", ${b.rate}, NOW())`, function (err, result) {
     console.log('add(w): done!')
   });
   res.redirect('/reg.html');

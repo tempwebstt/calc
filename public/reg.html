@@ -19,9 +19,16 @@
       window.onload = async () => {
         document.getElementById('rate').value = parseFloat(rate).toFixed(2).toString();
         ar = await fetch('/api/load/reg').then(response => response.json())
-        ar.forEach(e => { total_main += (e.amount * e.rate); })
+        ar.forEach(e => { total_main += (timetofloat(e.amount) * e.rate); })
         document.getElementById('total').innerHTML = parseFloat(total_main).toFixed(2).toString();
         showData()
+      }
+
+      function timetofloat(time) {
+        var parts = time.split(':')
+        var hours = parseFloat(parts[0])
+        var minute = (parseInt(parts[1]) / 60)
+        return (hours+minute)
       }
 
       function showData() {
@@ -31,7 +38,9 @@
           var date_f = new Date(e.date).toLocaleDateString('en-GB', {
             day:'numeric', month:'numeric', year:'numeric'
           }).split('/').join('.');
-          var data = `${date_f}; ${e.amount}; ${e.rate}; ${parseFloat(parseFloat(e.amount) * parseFloat(e.rate)).toFixed(2).toString()}; ${e.id}`
+          var time = e.amount.substring(0, e.amount.length - 3);
+          var sum = parseFloat(timetofloat(e.amount) * parseFloat(e.rate)).toFixed(2).toString();
+          var data = `${date_f}; ${e.amount}; ${e.rate}; ${sum}; ${e.id}`
           ul.innerHTML += `
             <div class="list-group-item overflow-hidden">
               <div class="row">
@@ -44,13 +53,13 @@
                   <div class="border-start border-secondary ps-2">
                     <p class="fw-bold m-0">${date_f}</p>
                     <span class="text-muted">
-                      <span class="badge bg-secondary"><i class='fa fa-clock-o fa-fw'></i> ${parseFloat(e.amount).toFixed(2).toString()}h</span>
+                      <span class="badge bg-secondary"><i class='fa fa-clock-o fa-fw'></i> ${time}h</span>
                       <span class="badge bg-secondary"><i class='fas fa-coins fa-fw'></i> ${parseFloat(e.rate).toFixed(2).toString()}</span>
                     </span>
                   </div>
                 </div>
                 <div class="col-3 my-auto text-end">
-                  <span class="badge bg-primary rounded-pill">${parseFloat(parseFloat(e.amount) * parseFloat(e.rate)).toFixed(2).toString()}€</span>
+                  <span class="badge bg-primary rounded-pill">${sum}€</span>
                 </div>
               </div>
             </div>
@@ -71,7 +80,6 @@
               document.getElementById(key).classList.add('is-invalid')
             }
         }
-        var am = document.getElementById('amount');
         if (errors.length == 0) form.submit()
       }
 
@@ -186,12 +194,12 @@
         <button type="button" class="btn-close btn-close p-3 float-end" aria-label="Close" onclick="showform(false)"></button>
         <form id="form_a" class="dark-input p-2" action="/api/reg" method="post">
           <div class="form-group mt-3">
-            <label for="amount">Hours</label>
+            <label for="amount">Hours spent</label>
             <div class="input-group">
               <span class="input-group-text preAM">
                 <span class="m-auto"><i class="fa fa-clock-o"></i></span>
               </span>
-              <input type="text" inputmode="decimal" step=0.01 name="amount" id="amount" oninput="dotreplace(event)" onkeypress="return deci_check(event)" onpaste="return check_paste(event)" class="form-control" placeholder="Amount of hours spent">
+              <input type="time" name="amount" id="amount" class="form-control" placeholder="Amount of hours spent">
             </div>
           </div>
           <div class="form-group mt-1">
