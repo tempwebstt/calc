@@ -61,21 +61,27 @@
     <header>
       <nav class="navbar navbar-dark bg-dark fixed-top">
         <div class="container-md w-100">
-          <a class="navbar-brand mr-0" href="/">
-            <i class="fa fa-home px-3"></i>
-          </a>
-          <span class="text-white" data-toggle="tooltip" data-bs-placement="right" title="Annual difference (overall)">
-            Modify [#<span id="oper_id"></span>]
-          </span>
-          <button type="button" class="navbar-brand mr-0 btn" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="loadChart()">
-            <i class="fw-bold far fa-trash-alt text-danger"></i>
-          </button>
+          <div class="col-2 text-start">
+            <a class="navbar-brand mr-0" href="/">
+              <i class="fa fa-home px-3"></i>
+            </a>
+          </div>
+          <div class="col-8 text-center">
+            <span class="text-white" data-toggle="tooltip" data-bs-placement="right" title="Annual difference (overall)">
+              Modify [#<span id="oper_id"></span>]
+            </span>
+          </div>
+          <div class="col-2 text-end">
+            <button type="button" class="navbar-brand mr-0 btn" data-bs-toggle="modal" data-bs-target="#exampleModal" onclick="loadChart()">
+              <i class="far fa-trash-alt text-danger fw-bold"></i>
+            </button>
+          </div>
         </div>
       </nav>
     </header>
 
     <div class="container-md py-3">
-      <div id="edit_data" class="border border-secondary rounded darker hidden p-2" role="alert">
+      <div id="edit_data" class="border border-secondary rounded darker hidden p-2">
         <form id="form_a" class="dark-input" action="/api/edit" method="post">
           <div class="form-group mb-2">
             <label for="title">Title</label>
@@ -84,7 +90,7 @@
           <div class="form-group mb-2">
             <label for="amount">Amount</label>
             <div class="input-group">
-              <input type="text" step=0.01 name="amount" id="amount" oninput="dotreplace()" onkeypress="return deci_check(event)" onpaste="return check_paste(event)" class="form-control" placeholder="Amount of money">
+              <input type="text" step=0.01 name="amount" id="amount" oninput="dotreplace(event)" onkeypress="return deci_check(event)" onpaste="return check_paste(event)" class="form-control" placeholder="Amount of money">
               <span class="input-group-text" id="postAM">€</span>
             </div>
           </div>
