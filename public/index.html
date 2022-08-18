@@ -165,15 +165,23 @@
       function loadCats() {
         var el = document.getElementById('cat-monthly');
         el.innerHTML = ''
+
+        var objs = []
         cc.forEach((item, i) => {
-          if (i > 0) {
-            var sym = (m_cat[i] > 0 ? '+' : '')
-            var cl = (m_cat[i] > 0 ? 'success' : 'danger')
-            var li = document.createElement('li')
-            li.className = 'list-group-item d-flex justify-content-between align-items-center'
-            li.innerHTML = `<span><i class="${c[i]} fa-fw text-primary"></i>&nbsp; ${cc[i]}</span> <span class="badge bg-${cl} rounded-pill">${sym}${m_cat[i].toFixed(2).toString()}€</span>`
-            el.appendChild(li)
-          }
+          var sym = (m_cat[i] > 0 ? '+' : '')
+          var cl = (m_cat[i] > 0 ? 'success' : 'danger')
+          objs.push({title: cc[i], num: m_cat[i], icon: c[i], color: cl, str: `${sym}${m_cat[i].toFixed(2).toString()}€`})
+        });
+        objs.shift()
+        objs.sort(function(a, b) {
+          return a.num - b.num || a.title.localeCompare(b.title);
+        })
+
+        objs.forEach((item, i) => {
+          var li = document.createElement('li')
+          li.className = 'list-group-item d-flex justify-content-between align-items-center'
+          li.innerHTML = `<span><i class="${item.icon} fa-fw"></i>&nbsp; ${item.title}</span> <span class="badge bg-${item.color} rounded-pill">${item.str}</span>`
+          el.appendChild(li)
         });
       }
 
