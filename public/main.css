@@ -19,7 +19,7 @@ body, .modal-body, .modal-footer {
 input {
   background-color: #E9DEFF !important;
 }
-.list-group-item, .input-group-text, select {
+.list-group-item, .input-group-text, select, .cstm {
   background-color: rgba(255,255,255,0.55) !important;
 }
 .list-group-item:hover, .list-group-item:active {
@@ -31,11 +31,25 @@ input {
 .modal-footer {
   border-color: #c2bad1 !important;
 }
+input::-webkit-date-and-time-value {
+  text-align: left;
+}
+
+.main {
+  border: 1px solid rgba(0,0,0,.125);;
+  border-radius: .2rem;
+  padding: 10px;
+  background-color: rgba(255,255,255,0.35) !important;
+}
 
 
 #month {
   background: none;
   text-align: center;
+}
+
+.form-control:focus {
+  box-shadow: none;
 }
 
 .fa-hamburger { color: chocolate; }

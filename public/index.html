@@ -22,6 +22,7 @@
       }
       clear_cat()
 
+
       window.onload = async () => {
         document.getElementById('category').value = '0'
         var element = document.getElementById("month")
@@ -246,32 +247,42 @@
       </nav>
     </header>
 
-    <div class="container-md py-2">
-      <div class="row">
-        <div class="col m-auto">
-          <span class="text-muted">available:</span>
-          <h3 class="p-0"><span id="total" data-toggle="tooltip" data-bs-placement="right" title="Monthly difference (overall)">0.00</span>€</h3>
+    <div class="container-md pt-2">
+      <div class="main">
+        <div class="row">
+          <div class="col m-auto">
+            <span class="text-muted">available:</span>
+            <h3 class="p-0"><span id="total" data-toggle="tooltip" data-bs-placement="right" title="Monthly difference (overall)">0.00</span>€</h3>
+          </div>
+          <div class="col">
+            <h3 class="text-end">
+              <span class="text-success">
+                +<span id="total_plus" data-toggle="tooltip" data-bs-placement="left" title="Monthly income only">0.00</span>€
+              </span>
+              <br>
+              <span class="text-danger">
+                -<span id="total_minus" data-toggle="tooltip" data-bs-placement="left" title="Monthly purchases only">0.00</span>€
+              </span>
+            </h3>
+          </div>
         </div>
-        <div class="col">
-          <h3 class="text-end">
-            <span class="text-success">
-              +<span id="total_plus" data-toggle="tooltip" data-bs-placement="left" title="Monthly income only">0.00</span>€
-            </span>
-            <br>
-            <span class="text-danger">
-              -<span id="total_minus" data-toggle="tooltip" data-bs-placement="left" title="Monthly purchases only">0.00</span>€
-            </span>
-          </h3>
+        <div class="btn-group btn-group-sm w-100" role="group">
+          <button type="button" class="btn btn-success" onclick="showform(true, '+')">Income (+)</button>
+          <button type="button" class="btn btn-danger" onclick="showform(true, '-')">Purchase (-)</button>
         </div>
-      </div>
-      <div class="btn-group btn-group-sm w-100" role="group">
-        <button type="button" class="btn btn-success" onclick="showform(true, '+')">Income (+)</button>
-        <button type="button" class="btn btn-danger" onclick="showform(true, '-')">Purchase (-)</button>
+        <div class="input-group mt-2 monthselect">
+          <button class="btn btn-dark" type="button" onclick="move(true)"><i class="fa fa-chevron-left"></i></button>
+          <select class="form-select border-dark" aria-label=".form-select" id="month" onchange="showData()">
+            <option disabled>Select a month</option>
+            <option value=0>View all</option>
+          </select>
+          <button class="btn btn-dark" type="button" onclick="move(false)"><i class="fa fa-chevron-right"></i></button>
+        </div>
       </div>
     </div>
 
-    <div id="add_data" class="container-md pb-2 hidden">
-      <div class="darker rounded overflow-hidden">
+    <div id="add_data" class="container-md pt-2 hidden">
+      <div class="border border-secondary darker rounded overflow-hidden">
         <button type="button" class="btn-close btn-close p-3 float-end" aria-label="Close" onclick="showform(false)"></button>
         <form id="form_a" class="p-3" action="/api/post" method="post">
           <div class="form-group mt-3">
@@ -337,15 +348,7 @@
       </div>
     </div>
 
-    <div class="container-md py-2 bt">
-      <div class="input-group mb-3 monthselect">
-        <button class="btn btn-dark" type="button" onclick="move(true)"><i class="fa fa-chevron-left"></i></button>
-        <select class="form-select border-dark" aria-label=".form-select" id="month" onchange="showData()">
-          <option disabled>Select a month</option>
-          <option value=0>View all</option>
-        </select>
-        <button class="btn btn-dark" type="button" onclick="move(false)"><i class="fa fa-chevron-right"></i></button>
-      </div>
+    <div class="container-md pt-3">
       <div class="list-group" id="list"></div>
     </div>
 
